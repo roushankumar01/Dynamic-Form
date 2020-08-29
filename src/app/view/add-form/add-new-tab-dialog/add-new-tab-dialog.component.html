@@ -1,0 +1,30 @@
+<mat-dialog-content>
+  <div>
+    <div>
+      <form class="form-container" #myForm="" [formGroup]="addTabFormGroups">
+        <mat-form-field color="primary" appearance="outline">
+          <mat-label>Tab Name</mat-label>
+          <input [(ngModel)]="currenTabData.tabsLabel"  required="true" matInput formControlName="tabName" />
+        </mat-form-field>
+        <!-- <mat-form-field color="primary" appearance="outline">
+          <mat-label>Add tabs options</mat-label>
+          <mat-select [(ngModel)]="currentFieldData.fieldItemType" #fldItemtype formControlName="fieldItemType">
+            <mat-option>--</mat-option>
+            <div *ngFor="let item of fieldItemType">
+              <mat-option [value]="item.itemTypeId">
+                {{ item.itemTypeName }}
+              </mat-option>
+              <mat-divider></mat-divider>
+            </div>
+          </mat-select>
+        </mat-form-field>
+        </div> -->
+      </form>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-button cdkFocusInitial (click)="addTab()" >Add</button>
+</mat-dialog-actions>

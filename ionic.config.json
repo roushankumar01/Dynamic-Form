@@ -1,5 +1,7 @@
 {
   "name": "dynamic-form-ionic",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

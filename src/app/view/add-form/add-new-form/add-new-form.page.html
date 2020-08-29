@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add New Form</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #myForm="" [formGroup]="formGroup" id="add_new_form">
+    <div class="form-container">
+      <mat-form-field color="primary" appearance="outline">
+        <mat-label>Form Name</mat-label>
+        <input required="true" matInput formControlName="form_name" />
+      </mat-form-field>
+      <mat-form-field color="primary" appearance="outline">
+        <mat-label>Form Desciption</mat-label>
+        <input required="true" matInput formControlName="form_des" />
+      </mat-form-field>
+    </div>
+  </form>
+
+
+  <input
+    accept="image/*"
+    (change)="onFileChosen($event)"
+    #fileInput
+    type="file"
+    style="display: none;"
+  />
+
+
+  <mat-grid-list cols="2" rowHeight="1:1" style="margin-bottom: 4%;">
+    <mat-grid-tile
+      ><mat-card style="height: 100%; width: 100%;" (click)="uploadProfilePicture(fileInput)">
+        <mat-card-header> </mat-card-header>
+        <mat-card-content style="text-align: center;">
+          <ion-icon style="font-size: 600%; margin-top: 4%;" name="cloud-upload-outline"></ion-icon>
+          <button mat-button style="font-size: 18px;">{{newFormData.formImage ? 'Change form image': 'Add form image'}} </button>
+        </mat-card-content> </mat-card
+    ></mat-grid-tile>
+    <mat-grid-tile
+      ><mat-card style="height: 100%;">
+        <mat-card-content>
+          <img [src]="newFormData.formImage ? newFormData.formImage: 'assets/img_preview.png'" />
+        </mat-card-content> </mat-card
+    ></mat-grid-tile>
+  </mat-grid-list>
+
+  <ion-row>
+    <ion-col size="4" offset="2">
+      <button mat-raised-button color="primary">Reset</button>
+    </ion-col>
+    <ion-col size="4" offset="2">
+      <button mat-raised-button color="primary" [disabled]="showSavingFormLoading" (click)="addForm()">
+        Next
+        <mat-icon *ngIf="showSavingFormLoading"><mat-spinner color="accent" diameter="20">
+        </mat-spinner></mat-icon>
+      </button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

@@ -1,0 +1,315 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit your forms</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div>
+    <ion-row style="margin: 3% 3%;">
+      <ion-col style="text-align: -webkit-right;">
+        <button style="margin-right: 5%;" *ngIf="formFieldsByTabs.length > 0" mat-raised-button color="primary" (click)="saveFormData()">
+         Save form Data
+        </button>
+        <button mat-raised-button color="primary" (click)="addTabs()">
+          Add new tab
+        </button>
+      </ion-col>
+    </ion-row>
+
+    <div *ngIf="noFormFieldsFound" style="padding: 1% 3%; text-align: center;">
+      <p>
+        No for fields or tabs found, to add tabs click on Add new tab button and
+        then add fields
+      </p>
+    </div>
+
+    <div>
+      <mat-accordion>
+        <mat-expansion-panel
+          [id]="'tab' + tabIndex"
+          *ngFor="let tab of formFieldsByTabs; let tabIndex = index"
+        >
+          <mat-expansion-panel-header
+            [collapsedHeight]="'60px'"
+            [expandedHeight]="'60px'"
+          >
+            <mat-panel-title>
+              <p>
+                <span [matBadge]="(tabIndex) + 1" matBadgeOverlap="false"></span
+                ><span></span>
+              </p>
+            </mat-panel-title>
+            <mat-panel-description style="margin-left: 5%; text-align: left;">
+              {{tab.tabsLabel}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-action-row>
+            <button
+              style="margin-right: 8px;"
+              mat-raised-button
+              color="warn"
+              (click)="addFields(tabIndex)"
+            >
+              Add Fields
+            </button>
+          </mat-action-row>
+
+          <table
+            mat-table
+            [dataSource]="tab.tabsFormFields"
+            multiTemplateDataRows
+            class="mat-elevation-z8"
+          >
+            <ng-container matColumnDef="field_id">
+              <th mat-header-cell *matHeaderCellDef>Field ID</th>
+              <td mat-cell *matCellDef="let element">{{element.fieldId}}</td>
+            </ng-container>
+            <ng-container matColumnDef="field_name">
+              <th mat-header-cell *matHeaderCellDef>Field Label</th>
+              <td mat-cell *matCellDef="let element">{{element.fieldLabel}}</td>
+            </ng-container>
+            <ng-container matColumnDef="field_item_type">
+              <th mat-header-cell *matHeaderCellDef>Field Item Type</th>
+              <td mat-cell *matCellDef="let element">
+                {{element.fieldItemType}}
+              </td>
+            </ng-container>
+
+            <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+            <ng-container matColumnDef="expandedDetail">
+              <td
+                mat-cell
+                *matCellDef="let element"
+                [attr.colspan]="columnsToDisplayForTabs.length"
+              >
+                <div
+                  class="example-element-detail"
+                  [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'"
+                >
+                  <div style="height: 100%;">
+                    <div>
+                      <!-- <div *ngFor="let item of getFieldObfFormElement(element) | keyvalue">
+                      Key: <b>{{item.key}}</b> and Value: <b>{{item.value}}</b>
+                  </div> -->
+
+                      <!-- Form All type -->
+                      <div class="form-container">
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Tab Id</mat-label>
+                          <input
+                            disabled
+                            [value]="element.tabId"
+                            readonly
+                            required="true"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field ID</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldId"
+                            readonly
+                            required="true"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field Item Type</mat-label>
+                          <mat-select
+                            disabled
+                            [value]="element.fieldItemType"
+                            #fldItemtype
+                          >
+                            <mat-option>--</mat-option>
+                            <div *ngFor="let item of fieldItemType">
+                              <mat-option [value]="item.itemTypeId">
+                                {{ item.itemTypeName }}
+                              </mat-option>
+                              <mat-divider></mat-divider>
+                            </div>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+
+                      <div
+                        class="form-container"
+                        *ngIf="
+            fldItemtype.value !== formDataSrvc.FormFieldsType.TAB_LABEL &&
+            fldItemtype.value !== formDataSrvc.FormFieldsType.LABEL
+          "
+                      >
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field Label</mat-label>
+                          <input disabled
+                            [value]="element.fieldLabel"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field Placeholder</mat-label>
+                          <input disabled
+                            [value]="element.fieldPlaceholder"
+                            matInput
+                          />
+                        </mat-form-field>
+
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field defualt value</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldDfltValue"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-checkbox
+                          disabled
+                          #chec
+                          [value]="element.fieldMandatory"
+                          >Is field mandetory?</mat-checkbox
+                        >
+                      </div>
+
+                      <div
+                        class="form-container"
+                        *ngIf="getFieldObfFormElement(element).fieldItemType === formDataSrvc.FormFieldsType.TEXT_INPUT || getFieldObfFormElement(element).fieldItemType === formDataSrvc.FormFieldsType.TEXT_INPUT_NUMBER_ONLY || getFieldObfFormElement(element).fieldItemType === formDataSrvc.FormFieldsType.TEXT_INPUT_READ_ONLY"
+                      >
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field min value</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldMinValue"
+                            type="number"
+                            required="true"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field max value</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldMaxValue"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field min length</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldMinLength"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field max length</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldMaxLength"
+                            matInput
+                          />
+                        </mat-form-field>
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label
+                            >Field text pattern regex for validation</mat-label
+                          >
+                          <input
+                            disabled
+                            [value]="element.fieldTextPattern"
+                            matInput
+                          />
+                        </mat-form-field>
+                      </div>
+
+                      <div
+                        class="form-container"
+                        *ngIf="getFieldObfFormElement(element).fieldItemType === formDataSrvc.FormFieldsType.DROPDOWN"
+                      >
+                        <mat-form-field color="primary" appearance="outline">
+                          <mat-label>Field option source type</mat-label>
+
+                          <mat-select disabled [value]="element.fieldOptSource">
+                            <mat-option>--</mat-option>
+                            <mat-option
+                              [value]="formDataSrvc.FormFieldOptionsSource.FROM_JSON_OBJ"
+                            >
+                              From JSON object
+                            </mat-option>
+                            <mat-divider> </mat-divider>
+                            <mat-option
+                              [value]="formDataSrvc.FormFieldOptionsSource.FROM_API"
+                            >
+                              From API
+                            </mat-option>
+                            <mat-divider></mat-divider>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field
+                          *ngIf="element.fieldOptSource === formDataSrvc.FormFieldOptionsSource.FROM_API"
+                          color="primary"
+                          appearance="outline"
+                        >
+                          <mat-label>Field option api url</mat-label>
+                          <input
+                            disabled
+                            [value]="element.fieldOptValueAPI"
+                            matInput
+                          />
+                        </mat-form-field>
+
+                        <mat-form-field
+                          *ngIf="element.fieldOptSource === formDataSrvc.FormFieldOptionsSource.FROM_JSON_OBJ"
+                          color="primary"
+                          appearance="outline"
+                        >
+                          <mat-label>Field option JSON object</mat-label>
+                          <textarea
+                            disabled
+                            matInput
+                            [value]="element.fieldOptValue"
+                          ></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <mat-action-row>
+                      <button
+                        style="margin-right: 8px;"
+                        mat-raised-button
+                        color="warn"
+                        (click)="editFields(tabIndex, element)"
+                      >
+                        Edit current fields
+                      </button>
+                    </mat-action-row>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplayForTabs"></tr>
+            <tr
+              mat-row
+              *matRowDef="let element; columns: columnsToDisplayForTabs;"
+              class="example-element-row"
+              [class.example-expanded-row]="expandedElement === element"
+              (click)="expandedElement = expandedElement === element ? null : element"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['expandedDetail']"
+              class="example-detail-row"
+            ></tr>
+          </table>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</ion-content>
+
+
+
+

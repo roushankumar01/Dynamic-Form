@@ -1,0 +1,263 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Form Apply</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid *ngIf="renderForm">
+    <ion-row>
+      <ion-col>
+        <mat-accordion>
+          <mat-expansion-panel
+            [id]="'tab' + tabIndex"
+            [expanded]="currentTab === tabIndex"
+            (opened)="setStep(tabIndex)"
+            *ngFor="let tab of formFieldsByTabs; let tabIndex = index"
+          >
+            <mat-expansion-panel-header
+              [collapsedHeight]="'60px'"
+              [expandedHeight]="'60px'"
+            >
+              <mat-panel-title>
+                <p>
+                  <span
+                    [matBadge]="(tabIndex) + 1"
+                    matBadgeOverlap="false"
+                  ></span
+                  ><span></span>
+                </p>
+              </mat-panel-title>
+              <mat-panel-description style="margin-left: 5%; text-align: left;">
+                {{tab.tabsLabel}}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form
+              #myForm=""
+              [formGroup]="tab.tabsFormGroup"
+              [id]="'form' + tabIndex"
+            >
+              <div
+                class="form-container"
+                *ngFor="
+                  let formField of tab.tabsFormFields;
+                  let fieldIndex = index
+                "
+              >
+              <mat-form-field
+                  color="primary"
+                  appearance="outline"
+                  *ngIf="formField.fieldItemType === fieldType.TEXT_INPUT"
+                >
+                  <mat-label>{{ formField.fieldLabel }}</mat-label>
+                  <input
+                    [id]="'tab' + tabIndex + 'field' + fieldIndex"
+                    [required]="formField.fieldMandatory"
+                    matInput
+                    [placeholder]="'Enter ' + formField.fieldLabel"
+                    [(ngModel)]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    formControlName="{{ formField.fieldControlName }}"
+                  />
+                  <mat-error
+                    *ngIf="
+                      formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).invalid &&
+                      (formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).dirty ||
+                        formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                          formField.fieldControlName
+                        ).touched)
+                    "
+                  >
+                    Please enter valid {{ formField.fieldLabel }}</mat-error
+                  >
+                </mat-form-field>
+
+                <mat-form-field
+                  [id]="'tab' + tabIndex + 'field' + fieldIndex"
+                  color="primary"
+                  appearance="outline"
+                  *ngIf="
+                    formField.fieldItemType === fieldType.DROPDOWN || formField.fieldItemType === fieldType.DROPDOWN_WITH_MULTIPLE_SELECTION
+                  "
+                >
+                  <mat-label>{{ formField.fieldLabel }}</mat-label>
+                  <mat-select
+                    [required]="formField.fieldMandatory"
+                    (selectionChange)="
+                      fieldChangeAction(formField, $event, tabIndex, fieldIndex)
+                    "
+                    [(ngModel)]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    [value]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    formControlName="{{ formField.fieldControlName }}"
+                  >
+                    <mat-option>--</mat-option>
+                    <div
+                      *ngFor="
+                    let dropdownItem of formFieldsByTabs[tabIndex]
+                      .tabsFormFields[fieldIndex]
+                      .fieldOptValueArrayFiltered;
+                    let dropdownIndex = index
+                  "
+                    >
+                      <mat-option [value]="dropdownItem.value">
+                        {{ dropdownItem.value }}
+                      </mat-option>
+                      <mat-divider></mat-divider>
+                    </div>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).invalid &&
+                      (formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).dirty ||
+                        formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                          formField.fieldControlName
+                        ).touched)
+                    "
+                  >
+                    Please choose {{ formField.fieldLabel }}</mat-error
+                  >
+                </mat-form-field>
+
+                <mat-form-field
+                  [id]="'tab' + tabIndex + 'field' + fieldIndex"
+                  color="primary"
+                  appearance="outline"
+                  *ngIf="
+                    formField.fieldItemType === fieldType.DROPDOWN_WITH_MULTIPLE_SELECTION
+                  "
+                >
+                  <mat-label>{{ formField.fieldLabel }}</mat-label>
+                  <mat-select multiple
+                    [required]="formField.fieldMandatory"
+                    (selectionChange)="
+                      fieldChangeAction(formField, $event, tabIndex, fieldIndex)
+                    "
+                    [(ngModel)]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    [value]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    formControlName="{{ formField.fieldControlName }}"
+                  >
+                    <mat-option>--</mat-option>
+                    <div
+                      *ngFor="
+                    let dropdownItem of formFieldsByTabs[tabIndex]
+                      .tabsFormFields[fieldIndex]
+                      .fieldOptValueArrayFiltered;
+                    let dropdownIndex = index
+                  "
+                    >
+                      <mat-option [value]="dropdownItem.value">
+                        {{ dropdownItem.value }}
+                      </mat-option>
+                      <mat-divider></mat-divider>
+                    </div>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).invalid &&
+                      (formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                        formField.fieldControlName
+                      ).dirty ||
+                        formFieldsByTabs[tabIndex].tabsFormGroup.get(
+                          formField.fieldControlName
+                        ).touched)
+                    "
+                  >
+                    Please choose {{ formField.fieldLabel }}</mat-error
+                  >
+                </mat-form-field>
+
+                <mat-form-field
+                  [id]="'tab' + tabIndex + 'field' + fieldIndex"
+                  color="primary"
+                  appearance="outline"
+                  *ngIf="formField.fieldItemType === fieldType.TIME"
+                >
+                  <mat-label>{{ formField.fieldLabel }}</mat-label>
+                  <input  [required]="formField.fieldMandatory"
+                    matInput
+                    aria-label="default time"
+                    [ngxTimepicker]="defaultValue"
+                    [(ngModel)]="
+                      formFieldsByTabs[tabIndex].tabsFormFields[fieldIndex]
+                        .fieldDfltValue
+                    "
+                    formControlName="{{ formField.fieldControlName }}"
+                    readonly
+                  />
+                  <ngx-material-timepicker
+                    #defaultValue
+                    [theme]="darkTheme"
+                  ></ngx-material-timepicker>
+                </mat-form-field>
+
+
+
+
+
+            </div>
+            </form>
+
+            <mat-action-row>
+              <button
+                style="margin-right: 8px;"
+                *ngIf="tabIndex !== 0"
+                mat-stroked-button
+                color="warn"
+                (click)="prevStep()"
+              >
+                Previous
+              </button>
+              <button
+                style="margin-right: 8px;"
+                *ngIf="tabIndex !== formFieldsByTabs.length - 1"
+                mat-stroked-button
+                color="primary"
+                (click)="nextStep()"
+              >
+                Next
+              </button>
+              <button
+                style="margin-right: 8px;"
+                *ngIf="tabIndex === formFieldsByTabs.length - 1"
+                mat-raised-button
+                color="primary"
+                (click)="submitForm()"
+              >
+                Preview
+              </button>
+            </mat-action-row>
+
+
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ion-col> </ion-row
+  ></ion-grid>
+</ion-content>

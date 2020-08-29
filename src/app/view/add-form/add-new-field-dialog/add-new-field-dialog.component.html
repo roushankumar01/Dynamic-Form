@@ -1,0 +1,305 @@
+<mat-dialog-content>
+  <div>
+    <div>
+      <form class="form-container" #myForm="" [formGroup]="addFieldFormGroups">
+        <mat-form-field color="primary" appearance="outline">
+          <mat-label>Tab Id</mat-label>
+          <input
+            [(ngModel)]="currentFieldData.tabId"
+            readonly
+            required="true"
+            matInput
+            formControlName="tabId"
+          />
+        </mat-form-field>
+        <mat-form-field color="primary" appearance="outline">
+          <mat-label>Field ID</mat-label>
+          <input
+            [(ngModel)]="currentFieldData.fieldId"
+            readonly
+            required="true"
+            matInput
+            formControlName="fieldId"
+          />
+        </mat-form-field>
+        <mat-form-field color="primary" appearance="outline">
+          <mat-label>Field Item Type</mat-label>
+          <mat-select
+            [(ngModel)]="currentFieldData.fieldItemType"
+            [value]="currentFieldData.fieldItemType"
+            #fldItemtype
+            formControlName="fieldItemType"
+          >
+            <mat-option>--</mat-option>
+            <div *ngFor="let item of fieldItemType">
+              <mat-option [value]="item.itemTypeId">
+                {{ item.itemTypeName }}
+              </mat-option>
+              <mat-divider></mat-divider>
+            </div>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- All fields  -->
+        <div
+          class="form-container"
+          *ngIf="
+            fldItemtype.value !== formDataSrvc.FormFieldsType.TAB_LABEL &&
+            fldItemtype.value !== formDataSrvc.FormFieldsType.LABEL &&
+            fldItemtype.value !== formDataSrvc.FormFieldsType.CHECKBOX
+          "
+        >
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field Label</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldLabel"
+              #fldlabel
+              required="true"
+              matInput
+              [value]="currentFieldData.fieldLabel"
+              formControlName="fieldLabel"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field Placeholder</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldPlaceholder"
+              required="true"
+              matInput
+              [value]="fldlabel.value"
+              formControlName="fieldPlaceholder"
+            />
+          </mat-form-field>
+
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field defualt value</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldDfltValue"
+              required="true"
+              matInput
+              formControlName="fieldDfltValue"
+            />
+          </mat-form-field>
+          <mat-checkbox
+            #chec
+            formControlName="fieldMandatory"
+            [(ngModel)]="currentFieldData.fieldMandatory"
+            >Is field mandetory?</mat-checkbox
+          >
+        </div>
+        <!-- For text fields  -->
+        <div
+          class="form-container"
+          *ngIf="
+            fldItemtype.value === formDataSrvc.FormFieldsType.TEXT_INPUT ||
+            fldItemtype.value === formDataSrvc.FormFieldsType.TEXT_INPUT_NUMBER_ONLY
+          "
+        >
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field min value</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMinValue"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMinValue"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field max value</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMaxValue"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMaxValue"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field min length</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMinLength"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMinLength"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field max length</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMaxLength"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMaxLength"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field text pattern regex for validation</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldTextPattern"
+              required="true"
+              matInput
+              formControlName="fieldTextPattern"
+            />
+          </mat-form-field>
+        </div>
+
+        <!-- Dropdown -->
+        <div
+          class="form-container"
+          *ngIf="
+            fldItemtype.value == formDataSrvc.FormFieldsType.DROPDOWN ||
+            fldItemtype.value ==
+              formDataSrvc.FormFieldsType.DROPDOWN_WITH_MULTIPLE_SELECTION
+          "
+        >
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field option source type</mat-label>
+            <mat-select
+              #fieldOptSource
+              formControlName="fieldOptSource"
+              [(ngModel)]="currentFieldData.fieldOptSource"
+              [value]="currentFieldData.fieldOptSource"
+            >
+              <mat-option>--</mat-option>
+              <mat-option
+                [value]="formDataSrvc.FormFieldOptionsSource.FROM_JSON_OBJ"
+              >
+                From JSON object
+              </mat-option>
+              <mat-divider> </mat-divider>
+              <mat-option
+                [value]="formDataSrvc.FormFieldOptionsSource.FROM_API"
+              >
+                From API
+              </mat-option>
+              <mat-divider></mat-divider>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field
+            *ngIf="
+              fieldOptSource.value ===
+              formDataSrvc.FormFieldOptionsSource.FROM_API
+            "
+            color="primary"
+            appearance="outline"
+          >
+            <mat-label>Field option api url</mat-label>
+            <input
+              type="url"
+              [(ngModel)]="currentFieldData.fieldOptValueAPI"
+              required="true"
+              matInput
+              formControlName="fieldOptValueAPI"
+            />
+          </mat-form-field>
+
+          <mat-form-field
+            *ngIf="
+              fieldOptSource.value ===
+              formDataSrvc.FormFieldOptionsSource.FROM_JSON_OBJ
+            "
+            color="primary"
+            appearance="outline"
+          >
+            <mat-label>Field option JSON object</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="currentFieldData.fieldOptValue"
+              formControlName="fieldOptValue"
+            ></textarea>
+          </mat-form-field>
+        </div>
+
+        <!-- checkboc -->
+        <div
+          *ngIf="fldItemtype.value === formDataSrvc.FormFieldsType.CHECKBOX"
+          class="form-container"
+        >
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field Label</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldLabel"
+              #fldlabel
+              required="true"
+              matInput
+              [value]="currentFieldData.fieldLabel"
+              formControlName="fieldLabel"
+            />
+          </mat-form-field>
+          <mat-checkbox
+            #chec
+            formControlName="fieldCheckDefault"
+            [(ngModel)]="currentFieldData.fieldCheckDefault"
+            >Is field checked defualt?</mat-checkbox
+          >
+          <mat-checkbox
+            #chec
+            formControlName="fieldMandatory"
+            [(ngModel)]="currentFieldData.fieldMandatory"
+            >Is field mandetory?</mat-checkbox
+          >
+        </div>
+
+        <!-- For date fields  -->
+        <div
+          class="form-container"
+          *ngIf="fldItemtype.value === formDataSrvc.FormFieldsType.DATE"
+        >
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field min date</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMinDate"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMinDate"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field max date</mat-label>
+            <input
+              [(ngModel)]="currentFieldData.fieldMaxDate"
+              type="number"
+              required="true"
+              matInput
+              formControlName="fieldMaxDate"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label>Field date format to display</mat-label>
+            <input
+              #fieldDateFormatToDisplay
+              [(ngModel)]="currentFieldData.fieldDateFormatToDisplay"
+              required="true"
+              matInput
+              formControlName="fieldDateFormatToDisplay"
+            />
+          </mat-form-field>
+          <mat-form-field color="primary" appearance="outline">
+            <mat-label
+              >Field date format to be send in the submit form</mat-label
+            >
+            <input
+              [value]="fieldDateFormatToDisplay.value"
+              [(ngModel)]="currentFieldData.fieldDateFormatToSendOnSubmit"
+              required="true"
+              matInput
+              formControlName="fieldDateFormatToSendOnSubmit"
+            />
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-button cdkFocusInitial (click)="addFields()">
+    {{ dialogData.isNewField === true ? "Add" : "Done" }}
+  </button>
+</mat-dialog-actions>
